@@ -1,0 +1,294 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أدوات أكاديمية للطلاب والباحثين</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tab-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: #007bff;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .tab-button:hover, .tab-button.active {
+            background-color: #0056b3;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tool {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            border-right: 5px solid #007bff;
+        }
+        .tool h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .tool p {
+            margin: 0 0 10px 0;
+            color: #666;
+            line-height: 1.5;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>أدوات أكاديمية للطلاب والباحثين</h1>
+
+    <div class="tab-container">
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('research')">أدوات البحث الأكاديمي</button>
+            <button class="tab-button" onclick="openTab('medical')">أدوات المعلومات الطبية</button>
+            <button class="tab-button" onclick="openTab('translation')">أدوات الترجمة</button>
+            <button class="tab-button" onclick="openTab('collaboration')">أدوات التعاون والإبداع</button>
+        </div>
+
+        <div id="research" class="tab-content active">
+            <div class="tool">
+                <h3>Core</h3>
+                <p>منصة بحث تجمع المقالات العلمية المفتوحة من مختلف المجلات والمستودعات الأكاديمية.</p>
+                <a href="https://core.ac.uk/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Research Gate</h3>
+                <p>شبكة اجتماعية للباحثين لمشاركة الأوراق العلمية والتواصل مع زملائهم.</p>
+                <a href="https://www.researchgate.net/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Academia</h3>
+                <p>منصة لمشاركة الأبحاث الأكاديمية واكتشاف الأوراق العلمية في مختلف المجالات.</p>
+                <a href="https://www.academia.edu/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>RefSeek</h3>
+                <p>محرك بحث أكاديمي يركز على المصادر العلمية مثل المقالات والكتب.</p>
+                <a href="https://www.refseek.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Semantic Scholar</h3>
+                <p>أداة بحث تعتمد على الذكاء الاصطناعي لتصفح المقالات العلمية بكفاءة.</p>
+                <a href="https://www.semanticscholar.org/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Consensus</h3>
+                <p>محرك بحث يساعد في العثور على إجابات موثوقة من الأبحاث العلمية.</p>
+                <a href="https://consensus.app/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Scinapse</h3>
+                <p>منصة بحث أكاديمي توفر وصولاً سريعاً للمقالات العلمية مع تحليلات متقدمة.</p>
+                <a href="https://scinapse.io/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Phind</h3>
+                <p>محرك بحث ذكي يساعد في العثور على إجابات دقيقة للأسئلة الأكاديمية.</p>
+                <a href="https://phind.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+        </div>
+
+        <div id="medical" class="tab-content">
+            <div class="tool">
+                <h3>Medical Information Platform</h3>
+                <p>منصة توفر معلومات طبية موثوقة لدعم الأبحاث والدراسات الطبية.</p>
+                <a href="#" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Open Evidence</h3>
+                <p>منصة مفتوحة تقدم أدلة طبية ومعلومات موثوقة للأطباء والباحثين.</p>
+                <a href="https://openevidence.fer.unizg.hr/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+        </div>
+
+        <div id="translation" class="tab-content">
+            <div class="tool">
+                <h3>DeepL (278.8M)</h3>
+                <p>أداة ترجمة متقدمة تعتمد على الذكاء الاصطناعي لترجمة نصوص دقيقة وسلسة.</p>
+                <a href="https://www.deepl.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>OpenL (1.556M)</h3>
+                <p>منصة ترجمة مفتوحة تدعم لغات متعددة مع ترجمات دقيقة.</p>
+                <a href="https://openl.ai/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Reverso (88.3M)</h3>
+                <p>أداة ترجمة تقدم ترجمات سياقية مع أمثلة للاستخدام.</p>
+                <a href="https://www.reverso.net/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>MateCAT (1.907M)</h3>
+                <p>أداة ترجمة موجهة للمترجمين المحترفين مع دعم للمشاريع الكبيرة.</p>
+                <a href="https://www.matecat.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>OnlineDocTranslator (10.96M)</h3>
+                <p>أداة لترجمة المستندات مع الحفاظ على تنسيق الملفات الأصلية.</p>
+                <a href="https://www.onlinedoctranslator.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Cohere Playground (1.448M)</h3>
+                <p>منصة لتجربة أدوات الذكاء الاصطناعي بما في ذلك الترجمة.</p>
+                <a href="https://playground.cohere.ai/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Yandex (14.7M)</h3>
+                <p>أداة ترجمة متعددة اللغات تقدم ترجمات سريعة ودقيقة.</p>
+                <a href="https://translate.yandex.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Immersive Translate (2M)</h3>
+                <p>أداة ترجمة تفاعلية تدعم الترجمة الفورية أثناء التصفح.</p>
+                <a href="https://immersivetranslate.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+        </div>
+
+        <div id="collaboration" class="tab-content">
+            <div class="tool">
+                <h3>Miro</h3>
+                <p>لوحة بيضاء تفاعلية للتعاون في العروض التقديمية والمشاريع.</p>
+                <a href="https://miro.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Monica</h3>
+                <p>أداة ذكاء اصطناعي تساعد في تنظيم المهام والإجابة على الأسئلة.</p>
+                <a href="https://monica.im/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Whimsical</h3>
+                <p>منصة لإنشاء الخرائط الذهنية والمخططات بطريقة سهلة وبصرية.</p>
+                <a href="https://whimsical.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>GitMind</h3>
+                <p>أداة لإنشاء الخرائط الذهنية لتنظيم الأفكار والمشاريع.</p>
+                <a href="https://gitmind.com/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Chat Mind</h3>
+                <p>منصة تفاعلية لإنشاء خرائط ذهنية بمساعدة الذكاء الاصطناعي.</p>
+                <a href="https://chatmind.io/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>My Lens</h3>
+                <p>أداة ذكاء اصطناعي لتحليل البيانات وإنشاء تقارير بصرية.</p>
+                <a href="https://mylens.ai/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+            <div class="tool">
+                <h3>Napkin</h3>
+                <p>منصة لتدوين الأفكار وتحويلها إلى خرائط ذهنية بصرية.</p>
+                <a href="https://www.napkin.ai/" target="_blank">احصل على الوصول الفوري</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        إعداد الأستاذ / ياسر مدير مكتبة كلية الخدمة الاجتماعية
+    </div>
+
+    <script>
+        function openTab(tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>
